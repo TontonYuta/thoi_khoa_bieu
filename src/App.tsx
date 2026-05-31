@@ -102,7 +102,7 @@ export default function App() {
       {/* Sidebar */}
       <aside className="w-full xl:w-72 2xl:w-80 bg-white border-b xl:border-b-0 xl:border-r border-neutral-200 p-6 flex flex-col flex-shrink-0 relative z-10 shadow-sm h-auto xl:h-screen overflow-y-auto">
         <h1 className="text-xl font-bold tracking-tight mb-2 text-neutral-900">
-          Thời Khóa Biểu
+          Thời Khóa Biểu của Yuta
         </h1>
         <p className="text-xs text-neutral-500 mb-6 leading-relaxed shrink-0">
           Kéo thả môn học vào các tiết. Quản lý môn học và ghi chú tại đây.

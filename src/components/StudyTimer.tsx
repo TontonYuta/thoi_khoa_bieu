@@ -13,58 +13,38 @@ export default function StudyTimer() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const playNotification = (isFinishingStudy: boolean) => {
-    // 1. Fallback / supplementary beep
     try {
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
+      const duration = 5; // 5 seconds
       
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(isFinishingStudy ? 600 : 800, audioCtx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 1);
-      
-      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + 1.5);
+      const freq = isFinishingStudy ? 880 : 1046; // A5 for study end, C6 for break end
+
+      for (let i = 0; i < duration * 2; i++) { // every 0.5 sec
+         const startTime = audioCtx.currentTime + i * 0.5;
+         
+         // 3 quick beeps per 0.5s interval
+         for (let b = 0; b < 3; b++) {
+           const beepStart = startTime + b * 0.12;
+           const osc = audioCtx.createOscillator();
+           const gainNode = audioCtx.createGain();
+           
+           osc.connect(gainNode);
+           gainNode.connect(audioCtx.destination);
+           
+           osc.type = "square";
+           osc.frequency.setValueAtTime(freq, beepStart);
+           
+           gainNode.gain.setValueAtTime(0, beepStart);
+           gainNode.gain.linearRampToValueAtTime(0.1, beepStart + 0.01);
+           gainNode.gain.setValueAtTime(0.1, beepStart + 0.06);
+           gainNode.gain.linearRampToValueAtTime(0, beepStart + 0.08);
+           
+           osc.start(beepStart);
+           osc.stop(beepStart + 0.08);
+         }
+      }
     } catch (e) {
       console.error("Audio block:", e);
-    }
-
-    // 2. Text-to-Speech (Vietnamese)
-    if ('speechSynthesis' in window) {
-      const text = isFinishingStudy
-        ? "Đã hết giờ học, đến lúc nghỉ ngơi rồi bạn nhé."
-        : "Đã hết giờ nghỉ, quay lại học nào bạn ơi.";
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'vi-VN';
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      
-      const setVoiceAndSpeak = () => {
-        const voices = window.speechSynthesis.getVoices();
-        // Cố gắng tìm giọng tiếng Việt nếu có trên hệ thống
-        const viVoice = voices.find(v => v.lang.includes('vi') || v.lang.includes('VI'));
-        if (viVoice) {
-          utterance.voice = viVoice;
-        }
-        window.speechSynthesis.speak(utterance);
-      };
-
-      if (window.speechSynthesis.getVoices().length > 0) {
-        setVoiceAndSpeak();
-      } else {
-        window.speechSynthesis.onvoiceschanged = () => {
-          setVoiceAndSpeak();
-          window.speechSynthesis.onvoiceschanged = null;
-        };
-      }
     }
   };
 
