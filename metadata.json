@@ -1,0 +1,6 @@
+{
+  "name": "Thời Khóa Biểu",
+  "description": "Ứng dụng thời khóa biểu kéo thả đơn giản với các môn học và tính năng nhắc nhở trước giờ học.",
+  "requestFramePermissions": ["notifications"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
