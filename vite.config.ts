@@ -12,8 +12,8 @@ export default defineConfig(() => {
       VitePWA({
         registerType: 'autoUpdate',
         manifest: {
-          name: 'Thời Khóa Biểu',
-          short_name: 'TKB',
+          name: 'Thời Khóa Biểu của Yuta',
+          short_name: 'TKB Yuta',
           description: 'Ứng dụng lịch học và bấm giờ pomodoro',
           theme_color: '#ffffff',
           background_color: '#ffffff',
@@ -21,7 +21,37 @@ export default defineConfig(() => {
           icons: []
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,ttf}']
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,ttf}'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 365 ngày
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            },
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'gstatic-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 365 ngày
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            }
+          ]
         }
       })
     ],
